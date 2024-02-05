@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name: 'User'})
@@ -20,11 +20,8 @@ export class User {
     @Column('varchar', { unique: true, length: 255, nullable: false })
     email: string;
 
-    @ApiProperty({
-        example: 'Ix58-3Bj',
-        description: 'Confidential alphanumeric code chosen by the user during registration, serving as a security measure to authenticate and protect access to the account.',
-    })
-    @Column('varchar', { length: 72, nullable: false, select: true })
+    @ApiHideProperty()
+    @Column('varchar', { length: 72, nullable: false, select: false })
     password: string;
 
     @ApiProperty({

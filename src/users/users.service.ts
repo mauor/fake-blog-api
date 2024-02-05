@@ -1,14 +1,12 @@
-import * as bcrypt from 'bcrypt';
-import { validate as isUUID } from 'uuid';
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { CreateUserDto, UpdateUserDto, UpdateUserPasswordDto } from './dto/index';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
-import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 
+import * as bcrypt from 'bcrypt';
+import { validate as isUUID } from 'uuid';
 
 @Injectable()
 export class UsersService {
@@ -48,12 +46,11 @@ export class UsersService {
     async findOne(term: string) {
         let user: User;
         if(isUUID( term )){
-            user = await this.userRepository.findOneBy({ user_id: term })
+            user = await this.userRepository.findOneBy({ user_id: term });
         }
         else{
-            user = await this.userRepository.findOneBy({ email: term })
+            user = await this.userRepository.findOneBy({ email: term });
         }
-
         if ( !user ) 
             throw new NotFoundException(`User with ${ term } not found.`);
 
@@ -73,12 +70,13 @@ export class UsersService {
     }
     
     async updatePassword(user_id: string, updateUserPasswordDto: UpdateUserPasswordDto) {    
-        const user = await this.findOne( user_id );
-        if ( !user ) throw new NotFoundException(`User with id: ${ user_id } not found.`);
-        console.log(updateUserPasswordDto)
-        console.log(user)
+        const user = await this.userRepository.findOne( {
+            where: { user_id },
+            select: { email: true, password: true, user_id: true }
+        } );
+
         if ( !bcrypt.compareSync( updateUserPasswordDto.old_password, user.password ) )
-            throw new UnauthorizedException('Credentials are not valid (password).')
+            throw new UnauthorizedException('Credentials are not valid (password).');
         user.password = bcrypt.hashSync( updateUserPasswordDto.password, 10 );
 
         try{
