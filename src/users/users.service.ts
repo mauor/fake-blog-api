@@ -33,11 +33,12 @@ export class UsersService {
     }
     
     async findAll(paginationDto: PaginationDto) {
-        const { limit = 10, offset = 0 } = paginationDto;
+        const { limit = 10, offset = 0 , order = 'ASC' } = paginationDto;
 
         const users = await this.userRepository.find({
             take: limit,
-            skip: offset
+            skip: offset,
+            order: { first_name: order }
         })
         if(!users.length) throw new NotFoundException(`Users not found with limit: ${ limit } and offset: ${ offset }.`)
         return users;

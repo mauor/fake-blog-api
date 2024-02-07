@@ -1,10 +1,10 @@
-import { Request, Controller, Post, UseGuards, Get, Body } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Request, Controller, Post, Get, Body } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { User } from 'src/users/entities/user.entity';
+import { Auth } from './decorators/auth.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -22,8 +22,7 @@ export class AuthController {
 
     @ApiOkResponse({ description: 'Ok.', type: User })
     @ApiUnauthorizedResponse({ description: 'Unauthorized.' })
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard())
+    @Auth()
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;
