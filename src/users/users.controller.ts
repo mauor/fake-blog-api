@@ -3,13 +3,11 @@ import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { CreateUserDto, UpdateUserDto, UpdateUserPasswordDto } from './dto/index';
+import { GetResponses, PostResponses, PatchResponses, DeleteResponses } from 'src/commmon/decorators/index';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { GetResponses } from 'src/commmon/decorators/getResponses.decorator';
-import { PostResponses } from 'src/commmon/decorators/postResponses.decorator';
-import { PatchResponses } from 'src/commmon/decorators/patchResponses.decorator';
-import { DeleteResponses } from 'src/commmon/decorators/deleteResponses.decorator';
+
 
 @ApiTags('Users')
 @Controller('users')

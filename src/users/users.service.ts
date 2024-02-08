@@ -63,7 +63,7 @@ export class UsersService {
         if ( !user ) throw new NotFoundException(`User with id: ${ user_id } not found.`);
         try{
             await this.userRepository.save( user );
-            return user;
+            return;
         }
         catch( error ){
             this.handleExceptionsDB( error );
