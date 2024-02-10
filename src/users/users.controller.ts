@@ -33,7 +33,7 @@ export class UsersController {
     @Auth()
     @ApiParam( { 
         name: 'term', 
-        description: 'UUID of the user or instead an email that is being searched',
+        description: 'UUID of the user or instead an email that is being searched.',
         example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'
     })
     findOne(@Param('term') term: string) {

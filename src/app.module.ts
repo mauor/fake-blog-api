@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { CommonModule } from './commmon/common.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
+import { CommentsModule } from './comments/comments.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
     imports: [
@@ -23,6 +25,8 @@ import { CategoriesModule } from './categories/categories.module';
         CommonModule,
         AuthModule,
         CategoriesModule,
+        CommentsModule,
+        PostsModule,
     ],
     controllers: [],
     providers: [],

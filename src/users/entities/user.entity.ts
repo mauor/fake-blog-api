@@ -1,5 +1,8 @@
 import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+
+import { Comment } from '../../comments/entities/comment.entity'
+import { Post } from "src/posts/entities/post.entity";
 
 @Entity({name: 'User'})
 export class User {
@@ -58,4 +61,16 @@ export class User {
     })
     @DeleteDateColumn()
     delete_date?: Date;
+
+    @OneToMany(
+        () => Post,
+        ( post ) => post.user
+    )
+    post: Post[];
+
+    @OneToMany(
+        () => Comment,
+        ( comment ) => comment.user
+    )
+    comment: Comment[];
 }

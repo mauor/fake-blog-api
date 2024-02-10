@@ -16,7 +16,7 @@ export class CreateCategoryDto {
     @ApiProperty({
         example: 'Category that talks about technological topics.',
         description: 'Description of the category.',
-        nullable: true
+        nullable: true,
     })
     @IsOptional()
     @IsString()
