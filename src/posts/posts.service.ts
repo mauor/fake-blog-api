@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Category } from 'src/categories/entities/category.entity';
+import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 
 @Injectable()
 export class PostsService {
@@ -29,8 +30,14 @@ export class PostsService {
             this.handleExceptionsDB( error );
         }
     }
-    findAll() {
-        return `This action returns all posts`;
+    async findAll(paginationDto: PaginationDto) {
+        const posts = await this.postRepository.find({
+            take: paginationDto.limit,
+            skip: paginationDto.offset,
+            order: { create_date: paginationDto.order },
+            relations: ['category', 'user']
+        });
+        return posts;
     }
 
     findOne(id: number) {
@@ -46,8 +53,7 @@ export class PostsService {
     }
 
     private handleExceptionsDB(error: any) {
-        console.log(error.code);
-         //Key don´t exist
+        //Key don´t exist
         if(error.code === '23503') throw new BadRequestException(error.detail);
         this.logger.error(error);
         //Key already exist

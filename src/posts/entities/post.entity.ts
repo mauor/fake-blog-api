@@ -56,14 +56,17 @@ export class Post {
     @ManyToOne(
         () => Category,
         ( category ) => category.post,
-        { onDelete: 'CASCADE' }
+        {
+            nullable: false,
+            onDelete: 'CASCADE'
+        }
     )
     @JoinColumn({
         name: 'category_id', 
         referencedColumnName: 'category_id',
     })
     @ApiProperty({
-        example: 'cd533345-f1f3-48c9-a62e-7dc2da50c8f8.',
+        type: () => Category,
         description: 'Unique identifier assigned to each category within a system. his serves tu reference to the category of the article.',
     })
     category: Category;
@@ -72,6 +75,7 @@ export class Post {
         () => User, 
         ( user ) => user.post,
         {
+            nullable: false,
             onDelete: 'CASCADE'
         }
     )
@@ -79,12 +83,15 @@ export class Post {
         name: 'user_id', 
         referencedColumnName: 'user_id',
     })
-  
+    @ApiProperty({
+        type: () => User,
+        description: 'Unique identifier assigned to each user within a system. This serves as a distinctive reference to distinguish one user from another.',
+    })
     user: User;
 
     @OneToMany(
         () => Comment,
         ( comment ) => comment.post
     )
-    comment: Comment;
+    comment: Comment[];
 }

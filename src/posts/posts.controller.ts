@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 
@@ -12,8 +12,9 @@ import { fileNamer } from './helpers/fileNamer';
 import { PostsService } from './posts.service';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { ValidationInterceptor } from './interceptors/file.interceptor';
-import { PostResponses } from 'src/commmon/decorators';
+import { GetResponses, PostResponses } from 'src/commmon/decorators';
 import { Post as Posts } from './entities/post.entity';
+import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -46,8 +47,10 @@ export class PostsController {
     }
 
     @Get()
-    findAll() {
-        return this.postsService.findAll();
+    @Auth()
+    @GetResponses( Posts, true )
+    findAll(@Query() paginationDto: PaginationDto) {
+        return this.postsService.findAll(paginationDto);
     }
 
     @Get(':id')
