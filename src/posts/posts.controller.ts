@@ -1,21 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Query } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UploadedFile, Req, Query, ParseUUIDPipe } from '@nestjs/common';
 import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
-
-
-import { diskStorage } from 'multer';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
-import { fileFilter } from './helpers/fileFilter';
-import { fileNamer } from './helpers/fileNamer';
+import { GetResponses, PatchResponses, PostResponses } from 'src/commmon/decorators';
+import { PaginationDto } from 'src/commmon/dto/pagination.dto';
+import { Post as Posts } from './entities/post.entity';
 import { PostsService } from './posts.service';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { ValidationInterceptor } from './interceptors/file.interceptor';
-import { GetResponses, PostResponses } from 'src/commmon/decorators';
-import { Post as Posts } from './entities/post.entity';
-import { PaginationDto } from 'src/commmon/dto/pagination.dto';
-import { ConfigService } from '@nestjs/config';
+import { FileUpload } from 'src/commmon/decorators/fileUpload.decorator';
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -28,17 +21,7 @@ export class PostsController {
     @Auth()
     @ApiConsumes('multipart/form-data')
     @PostResponses( Posts )
-    @UseInterceptors(
-        FileInterceptor('image', {
-            limits: { fileSize: 1024 * 1024 * 2 },
-            fileFilter: fileFilter,
-            storage: diskStorage({
-                destination: './static/uploads',
-                filename: fileNamer
-            })
-        }),
-        ValidationInterceptor
-    )
+    @FileUpload( 'image' )
     create(
         @Body() createPostDto: CreatePostDto, 
         @UploadedFile() file: Express.Multer.File,
@@ -68,8 +51,20 @@ export class PostsController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-        return this.postsService.update(+id, updatePostDto);
+    @Auth()
+    @PatchResponses( Posts )
+    @FileUpload( 'image' )
+    @ApiParam({
+        name: 'id', 
+        description: 'UUID of the post.',
+        example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'
+    })
+    update(
+        @Param('id', ParseUUIDPipe ) id: string, 
+        @Body() updatePostDto: UpdatePostDto, 
+        @UploadedFile() file: Express.Multer.File
+    ) {
+        return this.postsService.update( id, updatePostDto, file );
     }
 
     @Delete(':id')

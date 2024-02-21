@@ -23,20 +23,27 @@ export class PostsService {
         private readonly postRepository: Repository<Post>,
         private readonly configService: ConfigService
     ) {};
+
     async create(createPostDto: CreatePostDto, user: User, file: Express.Multer.File) {
         try{ 
-            const category = new Category;
-            category.category_id = createPostDto.category_id;
-            createPostDto.image_url = `${this.configService.get<string>('HOST_API')}/static/uploads/${file.filename}`;
-            const post = this.postRepository.create({ ...createPostDto, user, category });
-            await this.postRepository.save(post);
+            if(file) createPostDto.image_url = `${this.configService.get<string>('HOST_API')}/static/uploads/${file.filename}`;
+
+            const post = this.postRepository.create({ 
+                ...createPostDto, 
+                user, 
+                category: {
+                    category_id: createPostDto.category_id
+                } 
+            });
+            await this.postRepository.save( post );
             return post;
         }
         catch( error ){
-            if( fs.existsSync(file.path) ) fs.unlinkSync(file.path);
+            if( file && fs.existsSync(file.path) ) fs.unlinkSync(file.path);
             this.handleExceptionsDB( error );
         }
     }
+
     async findAll(paginationDto: PaginationDto) {
         const posts = await this.postRepository.find({
             take: paginationDto.limit,
@@ -50,21 +57,55 @@ export class PostsService {
     async findOne( term: string ) {
         let post: Post;
         if( isUUID( term ) ){
-            post = await this.postRepository.findOneBy( { post_id: term } );
+            post = await this.postRepository.findOne( { 
+                where: { post_id: term },
+                relations: ['category', 'user']
+            } );
         }
         else{
-            post = await this.postRepository.findOneBy( { title: term } )
+            post = await this.postRepository.findOne( { 
+                where: {title: term},
+                relations: ['category', 'user'],
+            } )
         }
         if( !post ) throw new NotFoundException(`Post with term: ${ term } not found.`);
         return post;
     }
 
-    update(id: number, updatePostDto: UpdatePostDto) {
-        return `This action updates a #${id} post`;
+    async update(post_id: string, updatePostDto: UpdatePostDto, file: Express.Multer.File) {
+        try{
+            if( file ){
+                updatePostDto.image_url = `${this.configService.get<string>('HOST_API')}/static/uploads/${file.filename}`;
+                await this.unlinkFile( post_id );
+            }
+            const post = this.postRepository.create({
+                ...updatePostDto, 
+                post_id,
+                category: {
+                    category_id: updatePostDto.category_id
+                }  
+            });
+            await this.postRepository.save(post);
+            return;
+        }
+        catch( error ){
+            if( file && fs.existsSync(file.path) ) fs.unlinkSync(file.path);
+            this.handleExceptionsDB( error );
+        }
     }
 
     remove(id: number) {
         return `This action removes a #${id} post`;
+    }
+
+    async unlinkFile(post_id: string) {
+        const post = await this.findOne( post_id );
+        
+        if( post.image_url ){
+            const filename = post.image_url.split('/').at(-1);
+            if ( fs.existsSync( `static/uploads/${filename}` ) ) fs.unlinkSync(  `static/uploads/${filename}` ); 
+        }
+        return;
     }
 
     private handleExceptionsDB(error: any) {
