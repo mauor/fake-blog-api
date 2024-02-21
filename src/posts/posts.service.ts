@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import * as fs from 'fs';
 import { Repository } from 'typeorm';
+import { validate as isUUID } from 'uuid';
 
 import { Category } from 'src/categories/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -46,8 +47,16 @@ export class PostsService {
         return posts;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} post`;
+    async findOne( term: string ) {
+        let post: Post;
+        if( isUUID( term ) ){
+            post = await this.postRepository.findOneBy( { post_id: term } );
+        }
+        else{
+            post = await this.postRepository.findOneBy( { title: term } )
+        }
+        if( !post ) throw new NotFoundException(`Post with term: ${ term } not found.`);
+        return post;
     }
 
     update(id: number, updatePostDto: UpdatePostDto) {

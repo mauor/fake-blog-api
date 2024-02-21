@@ -41,7 +41,7 @@ export class UsersController {
     }
 
     @Patch(':id') 
-    @PatchResponses()
+    @PatchResponses( User)
     @ApiParam({ name: 'id', description: 'UUID of the user.', example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'})
     @Auth()
     update(
@@ -52,7 +52,7 @@ export class UsersController {
     }
 
     @Patch('password/:id') 
-    @PatchResponses()
+    @PatchResponses( User, 'password' )
     @ApiParam({ name: 'id', description: 'UUID of the user.', example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'})
     @Auth()
     updatePassword(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserPasswordDto: UpdateUserPasswordDto) {
@@ -60,7 +60,7 @@ export class UsersController {
     }
 
     @Delete(':id')
-    @DeleteResponses()
+    @DeleteResponses( User )
     @ApiParam({ name: 'id', description: 'UUID of the user.', example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'})
     @Auth()
     remove(@Param('id', ParseUUIDPipe) id: string) {

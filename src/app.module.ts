@@ -24,7 +24,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
             synchronize: true
         }),
         ServeStaticModule.forRoot({
-            serveRoot: '/api/static/uploads/', // Path where the static files will be served.
+            serveRoot: '/api/static/uploads/', // Path where the static files will be served
             rootPath: join(__dirname, '..', '/static/uploads/'), // Path that contains the static files
         }),
         UsersModule,

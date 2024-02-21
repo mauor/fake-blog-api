@@ -41,7 +41,7 @@ export class CategoriesController {
     }
 
     @Patch(':id')
-    @PatchResponses()
+    @PatchResponses( Category )
     @Auth()
     @ApiParam( {
         name: 'id', description: 'UUID of the category.', example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'
@@ -51,7 +51,7 @@ export class CategoriesController {
     }
 
     @Delete(':id')
-    @DeleteResponses()
+    @DeleteResponses( Category )
     @Auth()
     @ApiParam( {
         name: 'id', description: 'UUID of the category.', example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'

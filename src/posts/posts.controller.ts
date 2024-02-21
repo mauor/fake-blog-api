@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 
 
 import { diskStorage } from 'multer';
@@ -55,9 +55,16 @@ export class PostsController {
         return this.postsService.findAll(paginationDto);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.postsService.findOne(+id);
+    @Get(':term')
+    @Auth()
+    @GetResponses( Posts )
+    @ApiParam({ 
+        name: 'term', 
+        description: 'UUID of the post or instead the title of the post that is being searched.',
+        example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'
+    })
+    findOne(@Param('term') term: string) {
+        return this.postsService.findOne( term );
     }
 
     @Patch(':id')

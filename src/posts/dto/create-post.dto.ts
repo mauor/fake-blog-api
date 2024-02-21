@@ -15,7 +15,7 @@ export class CreatePostDto {
     title: string;
 
     @ApiProperty({
-        example: `Embark on a captivating journey through the most remote and astonishing corners of our planet, where natural beauty unfolds in all its majesty. From the depths of the ocean to the peaks of the highest mountains, this narrative will take you to places where life flourishes in remarkable ways, and diversity reigns supreme. Join us on this expedition and be enthralled by the infinite variety of landscapes, flora, and fauna that our world has to offer.`,
+        example: `Embark on a captivating journey through the most remote and astonishing corners of our planet, where natural beauty unfolds in all its majesty. From the depths...`,
         description: 'Content of the post.',
     })
     @IsString()
