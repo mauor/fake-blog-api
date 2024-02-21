@@ -1,13 +1,16 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './entities/post.entity';
+import * as fs from 'fs';
 import { Repository } from 'typeorm';
+
+import { Category } from 'src/categories/entities/category.entity';
+import { CreatePostDto } from './dto/create-post.dto';
+import { PaginationDto } from 'src/commmon/dto/pagination.dto';
+import { Post } from './entities/post.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from 'src/users/entities/user.entity';
-import { Category } from 'src/categories/entities/category.entity';
-import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 
 @Injectable()
 export class PostsService {
@@ -16,17 +19,20 @@ export class PostsService {
 
     constructor(
         @InjectRepository( Post )
-        private readonly postRepository: Repository<Post>
+        private readonly postRepository: Repository<Post>,
+        private readonly configService: ConfigService
     ) {};
-    async create(createPostDto: CreatePostDto, user: User) {
-        try{
+    async create(createPostDto: CreatePostDto, user: User, file: Express.Multer.File) {
+        try{ 
             const category = new Category;
             category.category_id = createPostDto.category_id;
+            createPostDto.image_url = `${this.configService.get<string>('HOST_API')}/static/uploads/${file.filename}`;
             const post = this.postRepository.create({ ...createPostDto, user, category });
             await this.postRepository.save(post);
             return post;
         }
         catch( error ){
+            if( fs.existsSync(file.path) ) fs.unlinkSync(file.path);
             this.handleExceptionsDB( error );
         }
     }

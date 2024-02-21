@@ -15,11 +15,14 @@ import { ValidationInterceptor } from './interceptors/file.interceptor';
 import { GetResponses, PostResponses } from 'src/commmon/decorators';
 import { Post as Posts } from './entities/post.entity';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('Posts')
 @Controller('posts')
 export class PostsController {
-    constructor(private readonly postsService: PostsService ) {}
+    constructor(
+        private readonly postsService: PostsService,
+    ) {}
 
     @Post()
     @Auth()
@@ -42,8 +45,7 @@ export class PostsController {
         @Req() req: any
     ) {
         const user = req.user;
-        createPostDto.image = file?.filename;
-        return this.postsService.create(createPostDto, user);
+        return this.postsService.create(createPostDto, user, file);
     }
 
     @Get()

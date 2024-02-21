@@ -6,6 +6,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Post } from './entities/post.entity';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
     imports:[
@@ -13,6 +14,7 @@ import { PostsService } from './posts.service';
             Post
         ]),
         AuthModule,
+        ConfigModule
     ],
     controllers: [PostsController],
     providers: [PostsService]

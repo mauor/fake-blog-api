@@ -1,6 +1,5 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler, BadRequestException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { ValidationError, validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import * as fs from 'fs';

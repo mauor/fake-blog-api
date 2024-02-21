@@ -28,6 +28,10 @@ export class CreatePostDto {
     @IsOptional()
     image?: any;
 
+    @ApiHideProperty()
+    @IsOptional()
+    image_url: string;
+
     @IsOptional()
     @IsString()
     @ApiPropertyOptional({
