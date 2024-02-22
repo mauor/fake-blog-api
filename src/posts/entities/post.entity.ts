@@ -47,12 +47,24 @@ export class Post {
     })
     description?: string;
 
+    @ApiProperty({
+        example: '2024-01-01 01:00:00.000000',
+        description: 'Timestamp indicating the date and time when the post was created in the system.',
+    })
     @CreateDateColumn()
     create_date: Date;
 
+    @ApiProperty({
+        example: '2024-01-01 01:00:00.000000',
+        description: 'Timestamp indicating the date and time when the post was updated in the system.',
+    })
     @UpdateDateColumn()
     update_date: Date;
 
+    @ApiProperty({
+        example: '2024-01-01 01:00:00.000000',
+        description: 'Timestamp indicating the date and time when the post was deleted or marked for deletion within the system.',
+    })
     @DeleteDateColumn()
     delete_date?: Date;
 
