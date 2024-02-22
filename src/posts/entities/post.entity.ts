@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import { Category } from "src/categories/entities/category.entity";
 import { Comment } from "src/comments/entities/comment.entity";
@@ -52,6 +52,9 @@ export class Post {
 
     @UpdateDateColumn()
     update_date: Date;
+
+    @DeleteDateColumn()
+    delete_date?: Date;
 
     @ManyToOne(
         () => Category,

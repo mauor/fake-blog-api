@@ -3,7 +3,7 @@ import { ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
-import { GetResponses, PatchResponses, PostResponses } from 'src/commmon/decorators';
+import { DeleteResponses, GetResponses, PatchResponses, PostResponses } from 'src/commmon/decorators';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 import { Post as Posts } from './entities/post.entity';
 import { PostsService } from './posts.service';
@@ -68,7 +68,14 @@ export class PostsController {
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.postsService.remove(+id);
+    @Auth()
+    @DeleteResponses( Posts )
+    @ApiParam({
+        name: 'id', 
+        description: 'UUID of the post.',
+        example: '3957c2a3-4634-45c5-a83b-fb53d15d6242'
+    })
+    remove(@Param('id', ParseUUIDPipe) id: string) {
+        return this.postsService.remove( id );
     }
 }

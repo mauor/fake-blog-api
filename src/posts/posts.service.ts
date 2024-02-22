@@ -45,12 +45,14 @@ export class PostsService {
     }
 
     async findAll(paginationDto: PaginationDto) {
+        const { limit = 10, offset = 0, order = 'ASC' } = paginationDto;
         const posts = await this.postRepository.find({
-            take: paginationDto.limit,
-            skip: paginationDto.offset,
-            order: { create_date: paginationDto.order },
+            take: limit,
+            skip: offset,
+            order: { create_date: order },
             relations: ['category', 'user']
         });
+        if(!posts.length) throw new NotFoundException(`Posts not found with limit: ${ limit } and offset: ${ offset }.`)
         return posts;
     }
 
@@ -73,18 +75,19 @@ export class PostsService {
     }
 
     async update(post_id: string, updatePostDto: UpdatePostDto, file: Express.Multer.File) {
+        if( file ){
+            updatePostDto.image_url = `${this.configService.get<string>('HOST_API')}/static/uploads/${file.filename}`;
+            await this.unlinkFile( post_id );
+        }
+        const post = await this.postRepository.preload({
+            ...updatePostDto, 
+            post_id,
+            category: {
+                category_id: updatePostDto.category_id
+            }  
+        });
+        if ( !post ) throw new NotFoundException(`Post with id: ${ post_id } not found.`);
         try{
-            if( file ){
-                updatePostDto.image_url = `${this.configService.get<string>('HOST_API')}/static/uploads/${file.filename}`;
-                await this.unlinkFile( post_id );
-            }
-            const post = this.postRepository.create({
-                ...updatePostDto, 
-                post_id,
-                category: {
-                    category_id: updatePostDto.category_id
-                }  
-            });
             await this.postRepository.save(post);
             return;
         }
@@ -94,8 +97,10 @@ export class PostsService {
         }
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} post`;
+    async remove(post_id: string) {
+        const post = await this.findOne( post_id );
+        await this.postRepository.softRemove( post );
+        return;
     }
 
     async unlinkFile(post_id: string) {
