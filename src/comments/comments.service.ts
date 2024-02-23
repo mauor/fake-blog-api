@@ -46,16 +46,31 @@ export class CommentsService {
         return comments;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} comment`;
+    async findOne( comment_id: string ) {
+        const comment = await this.commentRepository.findOneBy( { comment_id } );
+        if( !comment ) throw new NotFoundException(`Comment not found with id: ${ comment_id } .`)
+        return comment;
     }
 
-    update(id: number, updateCommentDto: UpdateCommentDto) {
-        return `This action updates a #${id} comment`;
+    async update(comment_id: string, updateCommentDto: UpdateCommentDto) {
+        const comment = await this.commentRepository.preload( {
+            ...updateCommentDto,
+            comment_id
+        })
+        if(! comment ) throw new NotFoundException(`Comment not found with id: ${ comment_id }.`)
+        try{
+            await this.commentRepository.save(comment);
+            return;
+        }
+        catch( error ) {
+            this.handleExceptionsDB( error );
+        }
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} comment`;
+    async remove(comment_id: string) {
+        const comment = await this.findOne( comment_id );
+        await this.commentRepository.delete( comment );
+        return;
     }
 
     private handleExceptionsDB(error: any) {

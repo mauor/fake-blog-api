@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 import { Post } from "src/posts/entities/post.entity";
@@ -22,7 +22,7 @@ export class Category {
     @Column('varchar', { unique: true, length: 255, nullable: false } )
     category: string;
 
-    @ApiProperty({
+    @ApiPropertyOptional({
         example: 'Category that talks about technological topics.',
         description: 'Description of the category.',
         nullable: true
