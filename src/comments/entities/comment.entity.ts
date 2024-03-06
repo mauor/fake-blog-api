@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 
 import { User } from "src/users/entities/user.entity";
 import { Post } from "src/posts/entities/post.entity";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 
 @Entity({name: 'Comment'})
 export class Comment {
@@ -30,13 +30,6 @@ export class Comment {
     create_date: Date;
 
     @ApiProperty({
-        example: '2024-01-01 01:00:00.000000',
-        description: 'Timestamp indicating the date and time when the comment was updated or marked for deletion within the system.',
-    })
-    @UpdateDateColumn()
-    update_date: Date;
-
-    @ApiProperty({
         type: () => User,
         description: 'Unique identifier assigned to each user within a system.',
     })
@@ -53,10 +46,7 @@ export class Comment {
     })
     user: User
 
-    @ApiProperty({
-        type: () => Post,
-        description: 'Unique identifier assigned to each post within a system.',
-    })
+    @ApiHideProperty()
     @ManyToOne(
         () => Post, 
         ( post ) => post.comment,

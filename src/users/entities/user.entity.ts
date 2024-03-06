@@ -48,6 +48,10 @@ export class User {
     @Column('char', { length: 1, nullable: true })
     gender: string;
 
+    @ApiHideProperty()
+    @Column('varchar', { array: true, default: ['user'], select: false } )
+    role: string[];
+
     @ApiProperty({
         example: '2024-01-01 01:00:00.000000',
         description: 'Timestamp indicating the date and time when the user account was created or registered within the system.',
@@ -55,11 +59,8 @@ export class User {
     @CreateDateColumn()
     create_date: Date;
 
-    @ApiProperty({
-        example: '2024-01-01 01:00:00.000000',
-        description: 'Timestamp indicating the date and time when the user account was deleted or marked for deletion within the system.',
-    })
-    @DeleteDateColumn()
+    @ApiHideProperty()
+    @DeleteDateColumn( { select: false } )
     delete_date?: Date;
 
     @OneToMany(

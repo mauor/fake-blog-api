@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { User } from 'src/users/entities/user.entity';
+import { ResponseMessages } from 'src/commmon/constants/responseMessages';
 
 @Injectable()
 export class CommentsService {
@@ -35,24 +36,33 @@ export class CommentsService {
         }
     }
 
-    async findAll(paginationDto: PaginationDto) {
+    async findAllByPost(paginationDto: PaginationDto, post_id: string) {
         const { limit = 10, offset = 0, order = 'ASC' } = paginationDto;
-        const comments = await this.commentRepository.find( {
-            take: limit,
-            skip: offset,
-            order: { create_date: order } ,
-        } );
-        if( !comments.length ) throw new NotFoundException(`Comments not found with limit: ${ limit } and offset: ${ offset }.`)
+        const comments = await this.commentRepository
+        .createQueryBuilder("comment")
+        .leftJoinAndSelect("comment.user", "user")
+        .leftJoin("comment.post", "post")
+        .where("post.post_id = :post_id", { post_id })
+        .orderBy("comment.create_date", order)
+        .limit( limit )
+        .offset( offset )
+        .getMany();
+        if( !comments.length ) throw new NotFoundException(`Comments not found with post: ${ post_id } limit: ${ limit } and offset: ${ offset }.`)
         return comments;
     }
 
     async findOne( comment_id: string ) {
-        const comment = await this.commentRepository.findOneBy( { comment_id } );
+        const comment = await this.commentRepository.findOne( { 
+            where: {comment_id},
+            relations: ['user']
+        });
         if( !comment ) throw new NotFoundException(`Comment not found with id: ${ comment_id } .`)
         return comment;
     }
 
-    async update(comment_id: string, updateCommentDto: UpdateCommentDto) {
+    async update(comment_id: string, updateCommentDto: UpdateCommentDto, user: User) {
+        if(updateCommentDto.user_id !== user.user_id) throw new UnauthorizedException( ResponseMessages.FORBIDDEN );
+        
         const comment = await this.commentRepository.preload( {
             ...updateCommentDto,
             comment_id
@@ -67,8 +77,9 @@ export class CommentsService {
         }
     }
 
-    async remove(comment_id: string) {
+    async remove(comment_id: string, user: User) {
         const comment = await this.findOne( comment_id );
+        if( comment.user.user_id !== user.user_id ) throw new UnauthorizedException( ResponseMessages.FORBIDDEN );
         await this.commentRepository.delete( comment );
         return;
     }

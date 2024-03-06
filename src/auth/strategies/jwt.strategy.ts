@@ -6,7 +6,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Repository } from 'typeorm';
 
 import { User } from 'src/users/entities/user.entity';
-import { JwtPayload } from '../interface/jwt_payload';
+import { JwtPayload } from '../interface/jwt_payload.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -24,9 +24,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: JwtPayload) {
         const { user_id } = payload;
-        const user = this.userRepository.findOne( {
+        const user = await this.userRepository.findOne( {
             where: { user_id }   ,
-            select: { email: true, user_id: true } 
+            select: { email: true, user_id: true, role: true } 
         })
         if( !user ) throw new UnauthorizedException('Token not valid.')
 

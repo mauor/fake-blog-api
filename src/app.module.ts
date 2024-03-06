@@ -9,6 +9,7 @@ import { CommentsModule } from './comments/comments.module';
 import { PostsModule } from './posts/posts.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
     imports: [
@@ -23,16 +24,20 @@ import { ServeStaticModule } from '@nestjs/serve-static';
             autoLoadEntities: true,
             synchronize: true
         }),
+        ThrottlerModule.forRoot([{
+            ttl: 60,
+            limit: 100,
+        }]),
         ServeStaticModule.forRoot({
             serveRoot: '/api/static/uploads/', // Path where the static files will be served
             rootPath: join(__dirname, '..', '/static/uploads/'), // Path that contains the static files
         }),
-        UsersModule,
-        CommonModule,
         AuthModule,
+        UsersModule,
+        PostsModule,
         CategoriesModule,
         CommentsModule,
-        PostsModule,
+        CommonModule,
     ],
     controllers: [],
     providers: [],
