@@ -5,7 +5,7 @@ import { Role } from "src/auth/interface/role.enum";
 interface SeedCategory {
     category: string;
     description: string;
-    posts?: SeedPost[];
+    posts: SeedPost[];
 }
 
 interface SeedUser {   
@@ -17,11 +17,11 @@ interface SeedUser {
     role: Role[]
 }
 
-interface SeedComment {
+export interface SeedComment {
     comment: string;
 }
 
-interface SeedPost {
+export interface SeedPost {
     title: string,
     article: string,
     image_url?: string,
@@ -267,27 +267,67 @@ export const initialData: SeedData = {
                 {
                     "title": "Cómo mantener una dieta equilibrada mientras viajas",
                     "article": "Viajar no significa comprometer tu salud. Planifica con anticipación y elige opciones de alimentos nutritivos durante tus viajes. Opta por frutas frescas, verduras, proteínas magras y evita los alimentos procesados. Además, mantente hidratado bebiendo suficiente agua y limita el consumo de alcohol y bebidas azucaradas. ¡Tu cuerpo te lo agradecerá!",
-                    "description": "Consejos prácticos para mantener una alimentación saludable mientras exploras el mundo."
+                    "description": "Consejos prácticos para mantener una alimentación saludable mientras exploras el mundo.",
+                    "comments": [
+                        {
+                            "comment": "Estos consejos son muy útiles. Siempre es un desafío mantener una dieta saludable mientras viajas, pero con un poco de planificación, es posible."
+                        },
+                        {
+                            "comment": "Me encanta la idea de optar por alimentos frescos y nutritivos durante mis viajes. ¡Definitivamente lo intentaré en mi próximo viaje!"
+                        }
+                    ]
                 },
                 {
                     "title": "Estrategias para combatir el jet lag",
                     "article": "El jet lag puede afectar tu bienestar durante los viajes internacionales. Para minimizar sus efectos, intenta ajustarte a la nueva zona horaria antes de partir, mantente hidratado durante el vuelo, evita el alcohol y la cafeína, y trata de dormir según el horario local una vez que llegues a tu destino. También es útil exponerte a la luz natural durante el día para sincronizar tu reloj biológico.",
-                    "description": "Consejos para superar el cansancio y la desorientación causados por el cambio de horario durante los viajes."
+                    "description": "Consejos para superar el cansancio y la desorientación causados por el cambio de horario durante los viajes.",
+                    "comments": [
+                        {
+                            "comment": "El jet lag siempre es un desafío para mí cuando viajo. ¡Estos consejos son muy útiles para minimizar sus efectos!"
+                        },
+                        {
+                            "comment": "Nunca había considerado la importancia de ajustarme a la nueva zona horaria antes de partir. Definitivamente lo intentaré en mi próximo viaje internacional."
+                        }
+                    ]
                 },
                 {
                     "title": "La importancia del ejercicio físico durante los viajes",
                     "article": "Aunque estés de viaje, no descuides tu rutina de ejercicio. Camina, corre o realiza ejercicios de estiramiento para mantenerte activo y en forma. Muchos destinos ofrecen actividades al aire libre como senderismo, ciclismo o natación, que te permitirán explorar mientras te ejercitas. ¡No hay excusas para no mantener tu cuerpo en movimiento!",
-                    "description": "Consejos para incorporar la actividad física en tus aventuras viajeras y cuidar tu salud."
+                    "description": "Consejos para incorporar la actividad física en tus aventuras viajeras y cuidar tu salud.",
+                    "comments": [
+                        {
+                            "comment": "Estoy de acuerdo en que el ejercicio es importante durante los viajes. ¡Es una excelente manera de mantenerse en forma mientras se exploran nuevos lugares!"
+                        },
+                        {
+                            "comment": "Me encanta la idea de hacer senderismo o ciclismo mientras viajo. ¡Es una excelente manera de combinar ejercicio y exploración!"
+                        }
+                    ]
                 },
                 {
                     "title": "Meditación y relajación para reducir el estrés en los viajes",
                     "article": "Los viajes pueden ser emocionantes pero también estresantes. Dedica tiempo para practicar la meditación y la relajación, ya sea mediante técnicas de respiración profunda, yoga o simplemente disfrutando de la tranquilidad de la naturaleza. Esto te ayudará a reducir el estrés, mejorar tu bienestar emocional y disfrutar plenamente de tus experiencias de viaje.",
-                    "description": "Consejos para encontrar paz y serenidad en medio de la agitación de los viajes."
+                    "description": "Consejos para encontrar paz y serenidad en medio de la agitación de los viajes.",
+                    "comments": [
+                        {
+                            "comment": "La meditación ha sido una herramienta invaluable para mí para reducir el estrés durante los viajes. ¡Gracias por los consejos!"
+                        },
+                        {
+                            "comment": "Nunca había considerado la importancia de la relajación durante los viajes. Definitivamente lo intentaré en mi próximo viaje para mantenerme tranquilo y relajado."
+                        }
+                    ]
                 },
                 {
                     "title": "Descanso y sueño reparador durante los viajes",
                     "article": "No subestimes la importancia del descanso y el sueño durante tus viajes. Asegúrate de dormir lo suficiente para recargar energías y mantener tu sistema inmunológico fuerte. Utiliza tapones para los oídos, antifaces y almohadas de viaje para mejorar la calidad de tu sueño, especialmente si estás en un entorno ruidoso o poco familiar.",
-                    "description": "Consejos para garantizar un descanso adecuado y un sueño reparador durante tus aventuras."
+                    "description": "Consejos para garantizar un descanso adecuado y un sueño reparador durante tus aventuras.",
+                    "comments": [
+                        {
+                            "comment": "Estos consejos son muy útiles. Siempre es un desafío dormir bien en entornos desconocidos durante los viajes."
+                        },
+                        {
+                            "comment": "Nunca pensé en usar tapones para los oídos o antifaces durante los viajes. ¡Definitivamente lo intentaré para mejorar la calidad de mi sueño!"
+                        }
+                    ]
                 }
             ]     
         },

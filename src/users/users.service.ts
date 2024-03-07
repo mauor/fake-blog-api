@@ -1,12 +1,14 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CreateUserDto, UpdateUserDto, UpdateUserPasswordDto } from './dto/index';
-import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 
 import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
 import { validate as isUUID } from 'uuid';
+
+import { CreateUserDto, UpdateUserDto, UpdateUserPasswordDto } from './dto/index';
+import { PaginationDto } from 'src/commmon/dto/pagination.dto';
+import { User } from './entities/user.entity';
+
 
 @Injectable()
 export class UsersService {
@@ -23,13 +25,11 @@ export class UsersService {
             createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
 
             const user = this.userRepository.create( createUserDto );
-            await this.userRepository.save( user );
-            return user;
+            return await this.userRepository.save( user );   
         }
         catch( error ){
             this.handleExceptionsDB( error );
         }
-
     }
     
     async findAll(paginationDto: PaginationDto) {
@@ -62,8 +62,7 @@ export class UsersService {
         const user = await this.userRepository.preload({user_id, ...updateUserDto});
         if ( !user ) throw new NotFoundException(`User with id: ${ user_id } not found.`);
         try{
-            await this.userRepository.save( user );
-            return;
+            return await this.userRepository.save( user );
         }
         catch( error ){
             this.handleExceptionsDB( error );
@@ -94,7 +93,11 @@ export class UsersService {
         await this.userRepository.softDelete( user.user_id );
     }
     
-    handleExceptionsDB(error: any) {
+    private handleExceptionsDB(error: any) {
+        //Key don´t exist
+        if(error.code === '23503') throw new BadRequestException(error.detail);
+        this.logger.error(error);
+        //Key already exist
         if(error.code === '23505') throw new BadRequestException(error.detail);
         this.logger.error(error);
         throw new InternalServerErrorException('Unexpexted error, check server logs.');

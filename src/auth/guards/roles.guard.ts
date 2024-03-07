@@ -21,12 +21,10 @@ export class RolesGuard implements CanActivate {
         }
         const req = context.switchToHttp().getRequest();
         const user: User = req.user;
-
         if(!user) throw new BadRequestException('User not found.');
-        required_roles.some((role) => {
-            if(user.role?.includes(role)) return true;
-        });
-        
+       
+        const valid = required_roles.some( role => user.role.includes(role) )
+        if( valid ) return true;
         throw new ForbiddenException(`User with id: ${user.user_id} does have a valid role: [${ required_roles }]`)
     }
 }

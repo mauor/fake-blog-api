@@ -6,9 +6,9 @@ import { Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
+import { ResponseMessages } from 'src/commmon/constants/responseMessages';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { User } from 'src/users/entities/user.entity';
-import { ResponseMessages } from 'src/commmon/constants/responseMessages';
 
 @Injectable()
 export class CommentsService {
@@ -28,8 +28,7 @@ export class CommentsService {
                     post_id: createCommentDto.post_id
                 }
             } );
-            await this.commentRepository.save( comment );
-            return comment;
+            return await this.commentRepository.save( comment );
         }
         catch( error ){
             this.handleExceptionsDB( error );
@@ -69,8 +68,7 @@ export class CommentsService {
         })
         if(! comment ) throw new NotFoundException(`Comment not found with id: ${ comment_id }.`)
         try{
-            await this.commentRepository.save(comment);
-            return;
+            return await this.commentRepository.save(comment);
         }
         catch( error ) {
             this.handleExceptionsDB( error );
@@ -81,7 +79,6 @@ export class CommentsService {
         const comment = await this.findOne( comment_id );
         if( comment.user.user_id !== user.user_id ) throw new UnauthorizedException( ResponseMessages.FORBIDDEN );
         await this.commentRepository.delete( comment );
-        return;
     }
 
     private handleExceptionsDB(error: any) {

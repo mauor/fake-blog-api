@@ -6,7 +6,7 @@ import { Comment } from 'src/comments/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { initialData } from 'src/seed/data/seed-data';
+import { SeedComment, SeedPost, initialData } from 'src/seed/data/seed-data';
 
 @Injectable()
 export class SeedService {
@@ -23,7 +23,8 @@ export class SeedService {
     ){}
     async runSeed(){
         await this.deleteTables();
-        await this.insertUsers();
+        const dbUsers: User[] = await this.insertUsers();
+        await this.insertCategories( dbUsers);
         return; 
     }
 
@@ -55,18 +56,55 @@ export class SeedService {
     }
 
     private async insertUsers(){
-        const seed_users = initialData.users;
+        const seedUsers = initialData.users;
         const users: User[] = [];
-        seed_users.forEach( user => {
+        seedUsers.forEach( user => {
             users.push( this.userRepository.create( user ) );
         });
-        const db_users = await this.userRepository.save( users );
-        console.log( db_users );
+        return await this.userRepository.save( users );
+    }
+
+    private async insertCategories(dbUsers: User[]){
+        const seedCategories = initialData.categories;
+
+        for (const [index, seedCategory] of seedCategories.entries()) {
+            const seedPosts = seedCategories[ index ].posts;
+            const category = this.categoryRepository.create( seedCategory );    
+           
+            this.insertPosts( 
+                seedPosts, 
+                dbUsers, 
+                await this.categoryRepository.save( category )
+            );
+        }
         return;
     }
 
+    private async insertPosts( seedPosts: SeedPost[], dbUsers: User[], category: Category ){
+        const user = dbUsers[ Math.floor(Math.random() * dbUsers.length) ];
+        for (const [index, seedPost] of seedPosts.entries()) {
+            const seedComments = seedPosts[ index ].comments;
+            const post = this.postRepository.create( { ...seedPost, user, category } );
+
+            this.insertComments( 
+                seedComments,
+                dbUsers,
+                await this.postRepository.save( post )
+            );
+        };
+        return;
+    }
+
+    private async insertComments( seedComments: SeedComment[], dbUsers: User[], post: Post ){
+        const comments: Comment[] = [];
+        const user = dbUsers[ Math.floor(Math.random() * dbUsers.length) ];
+        seedComments.forEach( comment => {
+            comments.push( this.commentRepository.create( { ...comment, user, post } ) );
+        });
+        return await this.commentRepository.save( comments );
+    }
+
     handleExceptionsDB(error: any) {
-        if(error.code === '23505') throw new BadRequestException(error.detail);
         this.logger.error(error);
         throw new InternalServerErrorException('Unexpexted error, check server logs.');
     }

@@ -6,8 +6,8 @@ import { validate as isUUID } from 'uuid';
 
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -22,8 +22,7 @@ export class CategoriesService {
     async create(createCategoryDto: CreateCategoryDto) {
         try{
             const category =  await this.categoryRepository.create( createCategoryDto );
-            await this.categoryRepository.save( category );
-            return category;
+            return await this.categoryRepository.save( category );
         }
         catch( error ){
             this.handleExceptionsDB( error );
@@ -59,8 +58,7 @@ export class CategoriesService {
         const category = await this.categoryRepository.preload( { category_id, ...updateCategoryDto} );
         if( ! category ) throw new NotFoundException(`Category with id ${ category_id } not found.`);
         try{
-            await this.categoryRepository.save( category );
-            return;
+            return await this.categoryRepository.save( category );
         }
         catch( error ){
             this.handleExceptionsDB( error );
@@ -72,7 +70,11 @@ export class CategoriesService {
         await this.categoryRepository.softRemove( category );
     }
 
-    handleExceptionsDB(error: any) {
+    private handleExceptionsDB(error: any) {
+        //Key don´t exist
+        if(error.code === '23503') throw new BadRequestException(error.detail);
+        this.logger.error(error);
+        //Key already exist
         if(error.code === '23505') throw new BadRequestException(error.detail);
         this.logger.error(error);
         throw new InternalServerErrorException('Unexpexted error, check server logs.');

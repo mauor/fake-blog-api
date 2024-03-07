@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { Repository } from 'typeorm';
 import { validate as isUUID } from 'uuid';
 
-import { Category } from 'src/categories/entities/category.entity';
+// import { Category } from 'src/categories/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PaginationDto } from 'src/commmon/dto/pagination.dto';
 import { Post } from './entities/post.entity';
@@ -35,8 +35,7 @@ export class PostsService {
                     category_id: createPostDto.category_id
                 } 
             });
-            await this.postRepository.save( post );
-            return post;
+            return await this.postRepository.save( post );
         }
         catch( error ){
             if( file && fs.existsSync(file.path) ) fs.unlinkSync(file.path);
@@ -88,8 +87,7 @@ export class PostsService {
         });
         if ( !post ) throw new NotFoundException(`Post with id: ${ post_id } not found.`);
         try{
-            await this.postRepository.save(post);
-            return;
+            return await this.postRepository.save(post);
         }
         catch( error ){
             if( file && fs.existsSync(file.path) ) fs.unlinkSync(file.path);
@@ -100,7 +98,6 @@ export class PostsService {
     async remove(post_id: string) {
         const post = await this.findOne( post_id );
         await this.postRepository.softRemove( post );
-        return;
     }
 
     async unlinkFile(post_id: string) {
