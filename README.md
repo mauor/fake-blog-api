@@ -12,23 +12,18 @@
 ```bash
     npm install
 ```
-3. Change the environment variables.
-4. Up the database.
+3. Clone the file ```env.example``` and rename to ```.env```
+4. Change the environment variables.
+5. Up the database.
 ```bash
     docker-compose up -d
 ```
-5. Running the app.
+6. Running the app.
 ```bash
     npm run start:dev
 ```
-6. Execute seed.
+7. Execute seed.
 ```bash
     http://localhost:3000/api/seed
 ```
-7. [Documentation](http://localhost:3000/docs)
-
-## TODO
-
-1. Add resposes to comments.
-2. Add reactions to comments.
-3. Implement an stronger user role authorization.
+8. [Documentation](http://localhost:3000/docs)
