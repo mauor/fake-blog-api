@@ -10,6 +10,7 @@ import { PostsModule } from './posts/posts.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
         CategoriesModule,
         CommentsModule,
         CommonModule,
+        SeedModule,
     ],
     controllers: [],
     providers: [],
