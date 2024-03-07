@@ -10,7 +10,7 @@ import { SeedService } from './seed.service';
 export class SeedController {
     constructor(private readonly seedService: SeedService) {}
     @Get()
-    @Auth( Role.Admin )
+    // @Auth( Role.Admin )
     @ApiOperation( { summary: 'Execute the seed service.' } )
     executeSeed() {
         return this.seedService.runSeed();

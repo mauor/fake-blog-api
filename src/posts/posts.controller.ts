@@ -32,14 +32,12 @@ export class PostsController {
     }
 
     @Get()
-    @Auth()
     @GetResponses( Posts, true )
     findAll(@Query() paginationDto: PaginationDto) {
         return this.postsService.findAll(paginationDto);
     }
 
     @Get(':term')
-    @Auth()
     @GetResponses( Posts )
     @ApiParam({ 
         name: 'term', 

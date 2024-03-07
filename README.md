@@ -17,10 +17,15 @@
 ```bash
     docker-compose up -d
 ```
-5. Running the app
+5. Running the app.
 ```bash
     npm run start:dev
 ```
+6. Execute seed.
+```bash
+    http://localhost:3000/api/seed
+```
+7. [Documentation](http://localhost:3000/docs)
 
 ## TODO
 
