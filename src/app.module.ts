@@ -24,6 +24,15 @@ import { SeedModule } from './seed/seed.module';
             database: process.env.DB_NAME,
             autoLoadEntities: true,
             synchronize: true,
+            ssl: process.env.DB_SSL === "true",
+            extra: {
+                ssl: 
+                    process.env.DB_SSL === "true" 
+                        ? {
+                            rejectUnauthorized: false
+                        }
+                        : null
+            }
         }),
         ThrottlerModule.forRoot([{
             ttl: 60,
